@@ -7,6 +7,9 @@ interface KElement
 val String.s: KElement
     get() = KString(escapeHtml4(this))
 
+val String.unsafe: KElement
+    get() = KString(this)
+
 data class KString(val contents: String) : KElement
 
 fun elements(vararg elements: KElement) = KElementList(elements.toList())

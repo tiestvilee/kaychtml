@@ -27,5 +27,7 @@
     <orderEntry type="library" scope="TEST" name="natpryce.hamkrest" level="project" />
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
     <orderEntry type="library" name="apache.commons.text" level="project" />
+    <orderEntry type="library" name="http4k.core" level="project" />
+    <orderEntry type="library" name="http4k.server.jetty" level="project" />
   </component>
 </module>
