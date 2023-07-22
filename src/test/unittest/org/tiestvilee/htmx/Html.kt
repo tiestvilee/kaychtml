@@ -29,7 +29,11 @@ fun page(body: KElement) = doctype(
     )
 )
 
-fun loginForm(message: String): Form {
+fun load(target: String) = div(
+    "hx-get" attr target, "hx-trigger" attr "load", "hx-swap" attr "outerHTML",
+)
+
+fun loginForm(message: String): KTag {
     val emailId = id("email")
     val pwdId = id("password")
     return form(
@@ -41,7 +45,7 @@ fun loginForm(message: String): Form {
         label(pwdId, "Password".s),
         password(pwdId),
         button("type" attr "submit", "Submit".s),
-        if (message.isNullOrBlank()) noop() else p(message.s)
+        if (message.isBlank()) noop() else p(message.s)
     )
 }
 
@@ -49,67 +53,67 @@ fun headline(vararg children: KElement) = KTag("headline", false, false, childre
 fun columns(vararg children: KElement) = KTag("columns", false, false, children.toList())
 
 
-fun form(): Main {
+fun form(): KTag {
     val email = Id("email")
     val supportCheckbox = Id("supportCheckbox")
-    return main(
-        form(
-            "method" attr "POST",
-            "action" attr "/form",
+    return form(
+        "method" attr "POST",
+        "action" attr "/form",
 
-            img("image-url.jpeg", "alt text description"),
-            headline(
-                h2("Register now".s),
-                p("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.".s),
-            ),
-
-            columns(
-                labelledTextInput(Id("firstname"), "Given Name"),
-                labelledTextInput(Id("lastname"), "Family Name"),
-            ),
-
-            columns(
-                div(label(email, "Email".s), email(email)),
-                labelledTextInput(Id("phone"), "Phone number"),
-            ),
-
-            labelledTextInput(Id("address"), "Street Address"),
-            labelledTextInput(Id("address2"), "Street Address Line 2"),
-
-            columns(
-                labelledTextInput(Id("state"), "State/Province"),
-                labelledTextInput(Id("country"), "Country"),
-            ),
-
-            columns(
-                labelledTextInput(Id("post"), "Post/Zip code"),
-                labelledTextInput(Id("area"), "Area Code"),
-            ),
-
-            div(
-                label(
-                    supportCheckbox,
-                    checkbox(supportCheckbox),
-                    "I agree to the defined\u00A0".s, a("href" attr "#", "terms, conditions, and policies".s)
-                )
-            ),
-
-            button("Register Now".s)
+        img("image-url.jpeg", "alt text description"),
+        headline(
+            h2("Register now".s),
+            p("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.".s),
         ),
-        section(
-            headline(
-                h2("Registered Users".s),
-                p("Here are all the existing, registered users.".s)
-            ),
-            table(
-                thead(
-                    tr(td("Name".s), td("Emails".s), td("Action".s)),
-                ),
-                tableBody(3),
+
+        columns(
+            labelledTextInput(Id("firstname"), "Given Name"),
+            labelledTextInput(Id("lastname"), "Family Name"),
+        ),
+
+        columns(
+            div(label(email, "Email".s), email(email)),
+            labelledTextInput(Id("phone"), "Phone number"),
+        ),
+
+        labelledTextInput(Id("address"), "Street Address"),
+        labelledTextInput(Id("address2"), "Street Address Line 2"),
+
+        columns(
+            labelledTextInput(Id("state"), "State/Province"),
+            labelledTextInput(Id("country"), "Country"),
+        ),
+
+        columns(
+            labelledTextInput(Id("post"), "Post/Zip code"),
+            labelledTextInput(Id("area"), "Area Code"),
+        ),
+
+        div(
+            label(
+                supportCheckbox,
+                checkbox(supportCheckbox),
+                "I agree to the defined\u00A0".s, a("href" attr "#", "terms, conditions, and policies".s)
             )
-        )
+        ),
+
+        button("Register Now".s)
     )
 }
+
+fun users() =
+    section(
+        headline(
+            h2("Registered Users".s),
+            p("Here are all the existing, registered users.".s)
+        ),
+        table(
+            thead(
+                tr(td("Name".s), td("Emails".s), td("Action".s)),
+            ),
+            tableBody(3),
+        )
+    )
 
 fun tableBody(howmany: Int) = tbody(
     "hx-target" attr "this", "hx-swap" attr "outerHTML",

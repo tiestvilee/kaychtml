@@ -9,10 +9,7 @@ import org.http4k.core.Status.Companion.SEE_OTHER
 import org.http4k.core.body.form
 import org.http4k.core.with
 import org.http4k.lens.Header.Common.CONTENT_TYPE
-import org.http4k.routing.ResourceLoader
-import org.http4k.routing.bind
-import org.http4k.routing.routes
-import org.http4k.routing.static
+import org.http4k.routing.*
 import org.http4k.server.Jetty
 import org.http4k.server.asServer
 import org.tiestvilee.kaychtml.*
@@ -38,28 +35,23 @@ fun main() {
 
         routes(
             static(ResourceLoader.Classpath("public"), "html" to ContentType.TEXT_HTML),
+            "/page/{page}" bind GET to {
+                val page = it.path("page") ?: "loginasdf"
+                htmlResponse(page(load("/$page")))
+            },
             "/login" bind GET to {
-                if (it.header("HX-Request") == "true") {
-                    Response(OK).body(loginForm(Random.nextInt().toString()).toHtml()).with(CONTENT_TYPE of TEXT_HTML)
-                } else {
-                    Response(OK).body(page(main(loginForm(Random.nextInt().toString()))).toHtml()).with(CONTENT_TYPE of TEXT_HTML)
-                }
+                htmlResponse(main(loginForm(Random.nextInt().toString())))
             },
             "/login" bind POST to { req ->
                 if (req.form("password") == "asdf") {
-                    if (req.header("HX-Request") == "true")
-                        Response(SEE_OTHER)
-                            .header("HX-Location", "/form")
-                    else
-                        Response(SEE_OTHER)
-                            .header("Location", "/form")
-                } else {
                     Response(SEE_OTHER)
-                        .header("Location", "/login")
+                        .header("HX-Location", "/page/form")
+                } else {
+                    htmlResponse(loginForm("Unknown Username/Password"))
                 }
             },
             "/form" bind GET to {
-                Response(OK).body(page(form()).toHtml()).with(CONTENT_TYPE of TEXT_HTML)
+                htmlResponse(main(form(), users()))
             },
             "/user" bind DELETE to {
                 if (it.header("HX-Request") == "true")
@@ -72,5 +64,8 @@ fun main() {
         e.printStackTrace()
     }
 }
+
+private fun htmlResponse(page: KTag) =
+    Response(OK).body(page.toHtml()).with(CONTENT_TYPE of TEXT_HTML)
 
 
