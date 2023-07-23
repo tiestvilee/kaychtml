@@ -107,19 +107,31 @@ fun users() =
             h2("Registered Users".s),
             p("Here are all the existing, registered users.".s)
         ),
-        table(
-            thead(
-                tr(td("Name".s), td("Emails".s), td("Action".s)),
-            ),
-            tableBody(3),
-        )
+        load("/user"),
+        userForm(),
     )
 
-fun tableBody(howmany: Int) = tbody(
-    "hx-target" attr "this", "hx-swap" attr "outerHTML",
-    if (howmany == 3)
-        tr(td("Tiest".s), td("tiest@tiest.com".s), td(button("hx-delete" attr "/user", "delete".s)))
-    else noop(),
-    tr(td("Othmane".s), td("Othmane@othmane.com".s), td(button("delete".s))),
-    tr(td("Ibtissem".s), td("Ibtissem@ibtissem.com".s), td(button("delete".s))),
+fun userForm() = form(
+    "hx-post" attr "/user",
+    columns(
+        labelledTextInput(Id("informalName"), "Informal Name"),
+        div(label(Id("email"), "Email".s), email(Id("email"))),
+    ),
+    button("Register Now".s)
+)
+
+fun userTable(members: List<Member>) = table(
+    Id("user-table"),
+    "hx-target" attr "this", // for the delete button
+    "hx-swap" attr "outerHTML", // for the delete button
+    "hx-get" attr "/user", // for the form submission
+    "hx-trigger" attr "newUser from:body", // for the form submission
+    thead(
+        tr(td("Name".s), td("Emails".s), td("Action".s)),
+    ),
+    tbody(
+        members.map {
+            tr(td(it.informalName.s), td(it.email.s), td(button("hx-delete" attr "/user/${it.id.id}", "delete".s)))
+        }.elements()
+    )
 )
