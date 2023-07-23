@@ -126,7 +126,7 @@ fun `link`(vararg params: KElement): Link = Link(params.toList())
 
 fun `main`(vararg params: KElement): Main = Main(params.toList())
 
-fun `map_`(vararg params: KElement): Map_ = Map_(params.toList())
+fun `map`(vararg params: KElement): ImageMap = ImageMap(params.toList())
 
 fun `mark`(vararg params: KElement): Mark = Mark(params.toList())
 

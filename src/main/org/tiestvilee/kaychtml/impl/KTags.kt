@@ -1,6 +1,6 @@
 package org.tiestvilee.kaychtml.impl
 
-data class Doctype(val children: List<KElement>) : KTag("!DOCTYPE", true, false, children)
+class Doctype(children: List<KElement>) : KTag("!DOCTYPE", true, false, children)
 data class A(val children: List<KElement>) : KTag("a", false,  false, children)
 
 data class Abbr(val children: List<KElement>) : KTag("abbr", false,  false, children)
@@ -123,7 +123,7 @@ data class Link(val children: List<KElement>) : KTag("link", false,  true, child
 
 data class Main(val children: List<KElement>) : KTag("main", false,  false, children)
 
-data class Map_(val children: List<KElement>) : KTag("map_", false,  false, children)
+data class ImageMap(val children: List<KElement>) : KTag("map", false,  false, children)
 
 data class Mark(val children: List<KElement>) : KTag("mark", false,  false, children)
 

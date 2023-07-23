@@ -1,28 +1,27 @@
 package org.tiestvilee.kaychtml.impl
 
 open class KTag(val tagName: String, val declaration: Boolean, val empty: Boolean, params: List<KElement>) : KElement {
-    private val flattenedParams = params.fold(listOf<KElement>(), { acc: List<KElement>, item: KElement ->
+    private val flattenedParams = params.fold(listOf()) { acc: List<KElement>, item: KElement ->
         when (item) {
             is KElementList ->
-                item.elements.fold(acc, { flattened, subItem ->
+                item.elements.fold(acc) { flattened, subItem ->
                     flattened + subItem
-                })
+                }
+
             is KNoop -> acc
             else -> acc + item
         }
-    })
+    }
 
     val attributes = flattenedParams
-        .filter { it is KAttribute }
-        .map { it as KAttribute }
-        .fold(mapOf<String, String>(),
-            { acc, attr ->
-                acc + if (acc.containsKey(attr.name)) {
-                    Pair(attr.name, (acc[attr.name] + " " + attr.value))
-                } else {
-                    attr.asPair()
-                }
-            })
+        .filterIsInstance<KAttribute>()
+        .fold(mapOf<String, String>()) { acc, attr ->
+            acc + if (acc.containsKey(attr.name)) {
+                Pair(attr.name, (acc[attr.name] + " " + attr.value))
+            } else {
+                attr.asPair()
+            }
+        }
 
     val content = flattenedParams
         .filter { it !is KAttribute }

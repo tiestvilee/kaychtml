@@ -59,7 +59,7 @@ legend, false
 li, false
 link, true
 main, false
-map_, false
+map, false
 mark, false
 menu, false
 menuitem, false

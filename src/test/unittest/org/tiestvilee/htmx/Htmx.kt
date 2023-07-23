@@ -36,7 +36,7 @@ fun main() {
         routes(
             static(ResourceLoader.Classpath("public"), "html" to ContentType.TEXT_HTML),
             "/page/{page}" bind GET to {
-                val page = it.path("page") ?: "loginasdf"
+                val page = it.path("page") ?: "login"
                 htmlResponse(page(load("/$page")))
             },
             "/login" bind GET to {

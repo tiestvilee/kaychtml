@@ -26,7 +26,12 @@ tags = []
 with open("html_tags.csv", "r") as f:
     lines = csv.reader(f)
     for line in lines:
-        tags.append((line[0].strip().title(), line[0].strip(), line[1]))
+        tagName = line[0].strip()
+        className = tagName.title()
+        hasContents = line[1]
+        if tagName == "map":
+            className = "ImageMap"
+        tags.append((className, tagName, hasContents))
 
 with open("../src/main/org/tiestvilee/kaychtml/impl/KTags.kt", "w") as f:
     f.write(ktags_header)
