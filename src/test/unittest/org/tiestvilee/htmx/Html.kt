@@ -127,7 +127,7 @@ fun userTable(members: List<Member>) = table(
     "hx-get" attr "/user", // for the form submission
     "hx-trigger" attr "newUser from:body", // for the form submission
     thead(
-        tr(td("Name".s), td("Emails".s), td("Action".s)),
+        tr(th("Name".s), th("Emails".s), th("Action".s)),
     ),
     tbody(
         members.map {
@@ -135,3 +135,16 @@ fun userTable(members: List<Member>) = table(
         }.elements()
     )
 )
+
+fun resultsTable() =
+    table(
+        thead(
+            tr(td(), th("John".s), th("Mary".s), th("Anna".s)),
+        ),
+        tbody(
+            tr(th("Sarah".s), td("Sarah".s), td("Mary".s), td("Anna".s)),
+            tr(th("Anna".s), td("Anna".s), td("Mary".s)),
+            tr(th("Mary".s), td("Mary".s))
+        )
+    )
+

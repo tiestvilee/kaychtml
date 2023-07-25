@@ -83,6 +83,12 @@ fun main() {
             "/user-section" bind GET to {
                 htmlResponse(users())
             },
+            "/results-section" bind GET to {
+                htmlResponse(section(load("/results")))
+            },
+            "/results" bind GET to {
+                htmlResponse(resultsTable())
+            },
         ).asServer(Jetty(7001)).start()
     } catch (e: Exception) {
         e.printStackTrace()

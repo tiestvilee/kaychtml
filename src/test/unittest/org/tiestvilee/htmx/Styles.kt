@@ -31,11 +31,11 @@ val styles = """
         width: 100%;
     }
     
-    td {
+    td, th {
         padding: 0.5em;
     }
     
-    thead td {
+    th {
         background-color: #4C8BF5;
         color: #fff;
     }    
