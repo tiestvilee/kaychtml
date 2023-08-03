@@ -136,15 +136,32 @@ fun userTable(members: List<Member>) = table(
     )
 )
 
-fun resultsTable() =
-    table(
+fun boxDetails(box: Box, members: List<Member>): KTag {
+    return section(
+        headline(
+            h2(box.title.s),
+            p("Seomthtihnfa sadSotmtheijd somehtuidn".s),
+        ),
+        userTable(box.competitors.map { memberId -> members.find { it.id == memberId }!! })
+    )
+}
+
+fun boxResults(box: Box, members: List<Member>): KTag {
+    val columns: List<MemberId> = box.competitors.dropLast(1)
+    val rows = box.competitors.drop(1).reversed()
+    return table(
         thead(
-            tr(td(), th("John".s), th("Mary".s), th("Anna".s)),
+            tr(
+                td(),
+                columns.map { memberId ->
+                    th(members.find { it.id == memberId }!!.informalName.s)
+                }.elements()),
         ),
         tbody(
-            tr(th("Sarah".s), td("Sarah".s), td("Mary".s), td("Anna".s)),
-            tr(th("Anna".s), td("Anna".s), td("Mary".s)),
-            tr(th("Mary".s), td("Mary".s))
+            rows.map { memberId ->
+                tr(th(members.find { it.id == memberId }!!.informalName.s))
+            }.elements()
         )
     )
+}
 

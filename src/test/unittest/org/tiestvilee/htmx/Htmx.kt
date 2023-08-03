@@ -19,10 +19,11 @@ import org.tiestvilee.kaychtml.impl.*
 import kotlin.random.Random
 
 data class MemberId(val id: Int)
+data class BoxId(val id: Int)
 data class Member(val id: MemberId, val informalName: String, val email: String)
 data class Score(val sets: Int)
 data class CompetitionResult(val winner: MemberId, val winningScore: Score, val loser: MemberId, val losingScore: Score)
-data class Box(val id: Int, val competitors: List<MemberId>, val results: Map<Competition, CompetitionResult>)
+data class Box(val id: BoxId, val competitors: List<MemberId>, val results: Map<Competition, CompetitionResult>, val title: String)
 
 data class Competition private constructor(val competitors: Set<MemberId>) {
     constructor(first: MemberId, second: MemberId) : this(setOf(first, second))
@@ -38,10 +39,16 @@ fun main() {
             Member(MemberId(125), "Ibti", "ibti@ibti.com"),
             Member(MemberId(126), "Brian", "brian@brian.com"),
         )
-        val boxes = mutableListOf<Box>()
+        val boxes = mutableListOf(
+            Box(BoxId(321), listOf(members[0].id, members[1].id, members[2].id), mapOf(), "My competition")
+        )
 
         routes(
             static(ResourceLoader.Classpath("public"), "html" to ContentType.TEXT_HTML),
+            "/page/box/{id}" bind GET to {req ->
+                val id = req.path("id")
+                htmlResponse(page(main(load("/section/box/$id/details"), load("/section/box/$id/results"))))
+            },
             "/page/{page}" bind GET to {
                 val pages = (it.path("page") ?: "login").split(",").toList()
                 htmlResponse(page(main(pages.map { page -> load("/$page") }.elements())))
@@ -83,11 +90,23 @@ fun main() {
             "/user-section" bind GET to {
                 htmlResponse(users())
             },
-            "/results-section" bind GET to {
-                htmlResponse(section(load("/results")))
+            "/section/box/{id}/results" bind GET to {req ->
+                val id = req.path("id")
+                htmlResponse(section(load("/box/$id/results")))
             },
-            "/results" bind GET to {
-                htmlResponse(resultsTable())
+            "/section/box/{id}/details" bind GET to {req ->
+                val id = req.path("id")
+                htmlResponse(section(load("/box/$id/details")))
+            },
+            "/box/{id}/details" bind GET to {req ->
+                val id = BoxId(req.path("id")!!.toInt())
+                val box = boxes.find { it.id == id }!!
+                htmlResponse(boxDetails(box, members))
+            },
+            "/box/{id}/results" bind GET to {req ->
+                val id = BoxId(req.path("id")!!.toInt())
+                val box = boxes.find { it.id == id }!!
+                htmlResponse(boxResults(box, members))
             },
         ).asServer(Jetty(7001)).start()
     } catch (e: Exception) {
