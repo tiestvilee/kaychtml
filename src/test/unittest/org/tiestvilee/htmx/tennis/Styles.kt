@@ -1,10 +1,11 @@
-package unittest.org.tiestvilee.htmx
+package unittest.org.tiestvilee.htmx.tennis
 
 val minMobileWidth = 320
 val minTabletWidth = 480
 val minDisplayWidth = 768
 
 private val headerBlue = """#4C8BF5"""
+private val almostBlack = """#536387"""
 
 val styles = """
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -17,13 +18,38 @@ val styles = """
         font-family: 'Inter', sans-serif;
         align-items: center;
         justify-content: center;
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    header {
+        background-color: $headerBlue;
+        color: lightgrey;
+        font-size: 20pt;
+        padding: 1em 2em;
+        width: 100%;
+    }
+    
+    body > div {
+        flex-grow: 1;
+        display: flex;
+        height: 0px;
+        width: 100%;
+    }
+    
+    aside {
+        width: 10em;
+        background: white;
+        overflow: auto;
+        border-right: 5px double $headerBlue;
     }
 
     main {
-        margin: 0 auto;
-        max-width: 570px;
         width: 100%;
         background: white;
+        overflow: auto;
     }
     
     main > * {
@@ -31,6 +57,7 @@ val styles = """
         margin: 20px;
         border: 1px solid lightgrey;
         display: block;
+        background: white;
     }
     
     section > * {
@@ -46,7 +73,7 @@ val styles = """
         color: #fff;
     }    
     
-    tbody tr:nth-child(odd) {
+    tbody tr:nth-child(odd), li:nth-child(odd) {
         background-color: #f0f0f0;
     }
     
@@ -83,12 +110,12 @@ val styles = """
     p {
         font-size: 16px;
         line-height: 24px;
-        color: #536387;
+        color: $almostBlack;
         margin-top: 12px;
     }
 
     label {
-        color: #536387;
+        color: $almostBlack;
         font-size: 14px;
         line-height: 24px;
         display: block;
@@ -109,7 +136,7 @@ val styles = """
         background: #ffffff;
         font-weight: 500;
         font-size: 16px;
-        color: #536387;
+        color: $almostBlack;
         outline: none;
         resize: none;
     }
@@ -136,5 +163,14 @@ val styles = """
 
     button:hover {
         box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    li {
+       list-style: none;
+    }
+    
+    ul {
+        padding: 0;
+        margin: 1em;
     }
 """

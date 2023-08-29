@@ -1,10 +1,8 @@
-package unittest.org.tiestvilee.htmx
+package unittest.org.tiestvilee.htmx.tennis
 
 import org.tiestvilee.kaychtml.*
 import org.tiestvilee.kaychtml.impl.*
-import unittest.org.tiestvilee.htmx.tennis.Box
-import unittest.org.tiestvilee.htmx.tennis.Member
-import unittest.org.tiestvilee.htmx.tennis.MemberId
+import kotlin.random.Random
 
 fun label(`for`: Id, vararg children: KElement) = label("for" attr `for`.value, *children)
 fun img(src: String, alt: String, vararg children: KElement) = label("src" attr src, "alt" attr alt, *children)
@@ -19,6 +17,7 @@ fun checkbox(id: Id, vararg children: KElement) = inputFromId("checkbox", id, *c
 private fun labelledTextInput(id: Id, label: String) =
     div(label(id, label.s), inputText(id))
 
+fun a(href: String, vararg children: KElement) = a("href" attr href, *children)
 fun link(rel: String, href: String) = link("rel" attr rel, "href" attr href)
 fun script(src: String, integrity: String = "") =
     script(
@@ -27,16 +26,28 @@ fun script(src: String, integrity: String = "") =
         "integrity" attr integrity,
     )
 
-fun page(body: KElement) = doctype(
+fun page(vararg mainContents: KElement) = doctype(
     html(
         head(
             meta("charset" attr "utf-8"),
-            title("blah".s),
+            title("blah ${Random.nextInt()}".s),
             link(rel = "stylesheet", href = "https://necolas.github.io/normalize.css/8.0.1/normalize.css"),
             style(styles.unsafe),
-            script(src= "https://unpkg.com/htmx.org@1.9.4")
+            script(src = "https://unpkg.com/htmx.org@1.9.4")
         ),
-        body(body)
+        body(
+            "hx-boost" attr "true",
+            header("Tennis Boxes 4 U".s),
+            div(
+                aside(
+                    ul(
+                        li(a(href = "/page/users", "users".s)),
+                        li(a(href = "/page/boxes", "boxes".s)),
+                    )
+                ),
+                main(*mainContents)
+            )
+        )
     )
 )
 
@@ -44,86 +55,23 @@ fun load(target: String) = div(
     "hx-get" attr target, "hx-trigger" attr "load", "hx-swap" attr "outerHTML",
 )
 
-fun loginForm(message: String): KTag {
-    val emailId = id("email")
-    val pwdId = id("password")
-    return form(
-        "hx-post" attr "/login",
-        "method" attr "POST",
-        "action" attr "/login",
-        label(emailId, "Email".s),
-        email(emailId),
-        label(pwdId, "Password".s),
-        password(pwdId),
-        button("type" attr "submit", "Submit".s),
-        if (message.isBlank()) noop() else p(message.s)
-    )
-}
-
 fun headline(vararg children: KElement) = KTag("headline", false, false, children.toList())
 fun columns(vararg children: KElement) = KTag("columns", false, false, children.toList())
 
 
-fun form(): KTag {
-    val email = Id("email")
-    val supportCheckbox = Id("supportCheckbox")
-    return form(
-        "method" attr "POST",
-        "action" attr "/form",
-
-        img("image-url.jpeg", "alt text description"),
-        headline(
-            h2("Register now".s),
-            p("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.".s),
-        ),
-
-        columns(
-            labelledTextInput(Id("firstname"), "Given Name"),
-            labelledTextInput(Id("lastname"), "Family Name"),
-        ),
-
-        columns(
-            div(label(email, "Email".s), email(email)),
-            labelledTextInput(Id("phone"), "Phone number"),
-        ),
-
-        labelledTextInput(Id("address"), "Street Address"),
-        labelledTextInput(Id("address2"), "Street Address Line 2"),
-
-        columns(
-            labelledTextInput(Id("state"), "State/Province"),
-            labelledTextInput(Id("country"), "Country"),
-        ),
-
-        columns(
-            labelledTextInput(Id("post"), "Post/Zip code"),
-            labelledTextInput(Id("area"), "Area Code"),
-        ),
-
-        div(
-            label(
-                supportCheckbox,
-                checkbox(supportCheckbox),
-                "I agree to the defined\u00A0".s, a("href" attr "#", "terms, conditions, and policies".s)
-            )
-        ),
-
-        button("Register Now".s)
-    )
-}
-
-fun users() =
+fun users(members: List<Member>) =
     section(
         headline(
             h2("Registered Users".s),
             p("Here are all the existing, registered users.".s)
         ),
-        load("/user"),
+        userTable(members) { "/user/${it.id}" },
         userForm(),
     )
 
 fun userForm() = form(
-    "hx-post" attr "/user",
+    "action" attr "/user",
+    "method" attr "post",
     columns(
         labelledTextInput(Id("informalName"), "Informal Name"),
         div(label(Id("email"), "Email".s), email(Id("email"))),
@@ -131,20 +79,57 @@ fun userForm() = form(
     button("Register Now".s)
 )
 
-fun userTable(members: List<Member>) = table(
+fun userTable(members: List<Member>, deleteTarget: (MemberId) -> String) = table(
     Id("user-table"),
-    "hx-target" attr "this", // for the delete button
-    "hx-swap" attr "outerHTML", // for the delete button
-    "hx-get" attr "/user", // for the form submission
-    "hx-trigger" attr "newUser from:body", // for the form submission
     thead(
         tr(th("Name".s), th("Emails".s), th("Action".s)),
     ),
     tbody(
         members.map {
-            tr(td(it.informalName.s), td(it.email.s), td(button("hx-delete" attr "/user/${it.id.id}", "delete".s)))
+            tr(
+                td(it.informalName.s), td(it.email.s), td(
+                    button(
+                        "hx-delete" attr deleteTarget(it.id),
+                        "hx-target" attr "main",
+                        "hx-select" attr "main",
+                        "hx-swap" attr "outerHTML",
+                        "delete".s
+                    )
+                )
+            )
         }.elements()
     )
+)
+
+fun boxes(boxes: List<Box>) =
+    section(
+        headline(
+            h2("Boxes".s),
+            p("Here are all the boxes.".s)
+        ),
+        boxesTable(boxes),
+        boxForm()
+    )
+
+fun boxesTable(boxes: List<Box>) = table(
+    Id("boxes-table"),
+    thead(
+        tr(th("Title".s)),
+    ),
+    tbody(
+        boxes.map {
+            tr(
+                td(a(href = "/page/box/${it.id.id}", it.title.s))
+            )
+        }.elements()
+    )
+)
+
+fun boxForm() = form(
+    "action" attr "/box",
+    "method" attr "post",
+    labelledTextInput(Id("title"), "Title"),
+    button("Register Now".s)
 )
 
 fun boxDetails(box: Box, members: List<Member>): KTag {
@@ -154,8 +139,30 @@ fun boxDetails(box: Box, members: List<Member>): KTag {
             p("Seomthtihnfa sadSotmtheijd somehtuidn".s),
         ),
         userTable(box.competitors.map { memberId -> members.find { it.id == memberId }!! })
+        { "/box/${box.id.id}/competitors/${it.id}" },
+        competitorForm(box, members),
     )
 }
+
+fun competitorForm(box: Box, members: List<Member>): KElement =
+    members.filterNot { box.competitors.contains(it.id) }.let { nonCompetitors ->
+        if (nonCompetitors.isNotEmpty()) {
+            form(
+                "action" attr "/box/${box.id.id}/competitors",
+                "method" attr "post",
+                select(
+                    Id("userId"),
+                    "name" attr "userId",
+                    nonCompetitors.map {
+                        option("value" attr it.id.id.toString(), it.informalName.s)
+                    }.elements(),
+                ),
+                button("Add User".s)
+            )
+        } else {
+            noop()
+        }
+    }
 
 fun boxResults(box: Box, members: List<Member>): KTag {
     val columns: List<MemberId> = box.competitors.dropLast(1)

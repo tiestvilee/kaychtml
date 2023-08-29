@@ -16,6 +16,12 @@ import org.http4k.server.Jetty
 import org.http4k.server.asServer
 import org.tiestvilee.kaychtml.*
 import org.tiestvilee.kaychtml.impl.*
+import unittest.org.tiestvilee.htmx.tennis.Box
+import unittest.org.tiestvilee.htmx.tennis.BoxId
+import unittest.org.tiestvilee.htmx.tennis.Competition
+import unittest.org.tiestvilee.htmx.tennis.CompetitionResult
+import unittest.org.tiestvilee.htmx.tennis.MemberId
+import unittest.org.tiestvilee.htmx.tennis.Score
 import kotlin.random.Random
 
 data class MemberId(val id: Int)
@@ -34,10 +40,10 @@ fun main() {
     try {
 
         val members = mutableListOf(
-            Member(MemberId(123), "Tiest", "tiest@tiest.com"),
-            Member(MemberId(124), "Othmane", "othmane@othmane.com"),
-            Member(MemberId(125), "Ibti", "ibti@ibti.com"),
-            Member(MemberId(126), "Brian", "brian@brian.com"),
+            unittest.org.tiestvilee.htmx.tennis.Member(MemberId(123), "Tiest", "tiest@tiest.com"),
+            unittest.org.tiestvilee.htmx.tennis.Member(MemberId(124), "Othmane", "othmane@othmane.com"),
+            unittest.org.tiestvilee.htmx.tennis.Member(MemberId(125), "Ibti", "ibti@ibti.com"),
+            unittest.org.tiestvilee.htmx.tennis.Member(MemberId(126), "Brian", "brian@brian.com"),
         )
         val boxes = mutableListOf(
             Box(BoxId(321), listOf(members[0].id, members[1].id, members[2].id), mapOf(), "My competition")
@@ -77,8 +83,8 @@ fun main() {
                 htmlResponse(userTable(members))
             },
             "/user" bind POST to {req ->
-                val newMember = Member(
-                    MemberId(members.maxByOrNull { it.id.id }!!.id.id + 1) ,
+                val newMember = unittest.org.tiestvilee.htmx.tennis.Member(
+                    MemberId(members.maxByOrNull { it.id.id }!!.id.id + 1),
                     req.form("informalName") ?: throw Exception("missing informalName"),
                     req.form("email") ?: throw Exception("missing informalName"),
                 )

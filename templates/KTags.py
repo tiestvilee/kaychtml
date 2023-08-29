@@ -13,7 +13,7 @@ kaychtml_header = """package org.tiestvilee.kaychtml
 
 import org.tiestvilee.kaychtml.impl.*
 
-fun doctype(vararg params: KElement): Doctype = Doctype(params.toList())
+fun doctype(vararg params: KElement): Doctype = Doctype(listOf(KAttribute("html", "")) + params.toList())
 
 """
 
